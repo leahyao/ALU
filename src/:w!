@@ -1,0 +1,69 @@
+module alu
+  (
+
+   input  clk,
+   input  reset_n,
+
+   input  alu_pkg::alu_cmd_t  alu_cmd,
+   input  alu_pkg::uint_vld_t operand_a,
+   input  alu_pkg::uint_vld_t operand_b,
+
+   output alu_pkg::uint_vld_t result
+
+   );
+	
+	
+
+   	logic [alu_pkg::dstwidth-1:0] 	rst_add;
+   	logic [alu_pkg::dstwidth-1:0] 	rst_sub;
+   	logic [alu_pkg::dstwidth-1:0] 	rst_mul;
+   	logic [alu_pkg::dstwidth-1:0] 	rst_div;
+   	logic [alu_pkg::dstwidth-1:0] 	rst_mean;
+   	
+	//ctrl path
+	always @(posedge clk or posedge reset_n) begin
+		if(reset_n) begin
+			r1_vld <= 1'b0;
+			r1_op  <= 3'b0;
+		end else begin 	
+			r1_vld <= alu_cmd.vld;
+			r1_op  <= alu_cmd.op;
+		end
+	end
+
+	//data path
+	always @(posedge clk) begin
+		r1_operand_a <= operand_a;
+		r1_op  <= alu_cmd.op;
+	end
+
+
+	add m_add(
+		.a(operand_a),
+		.b(operand_b),
+		.out(rst_add)
+   	);
+
+	sub m_sub(
+		.a(operand_a),
+		.b(operand_b),
+		.out(rst_sub)
+   	);
+
+	mul m_mul(
+		.a(operand_a),
+		.b(operand_b),
+		.out(rst_mul)
+   	);
+
+	div m_div(
+		.a(operand_a),
+		.b(operand_b),
+		.out(rst_div)
+   	);
+	
+	assign rst_mean = {1'b0,rst_add[dstwidth-1:1]};
+	
+	assign 
+   	
+endmodule
